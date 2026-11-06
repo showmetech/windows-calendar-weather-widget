@@ -86,10 +86,13 @@ def msix():
         manifest(config,arch,source/'AppxManifest.xml')
         run(makeappx,'pack','/d',source,'/p',bundle/f'CalendarWeather-{arch}.msix','/o')
     run(makeappx,'bundle','/d',bundle,'/p',ARTIFACTS/f'Windows-Calendar-Weather-Widget-{version()}.msixbundle','/o')
+    package=ARTIFACTS/f'Windows-Calendar-Weather-Widget-{version()}.msixbundle'
+    with zipfile.ZipFile(package.with_suffix('.msixupload'),'w',zipfile.ZIP_DEFLATED) as upload:
+        upload.write(package,package.name)
     write_hashes()
 
 def write_hashes():
-    files=sorted(p for p in ARTIFACTS.iterdir() if p.suffix in ('.zip','.msixbundle','.msix'))
+    files=sorted(p for p in ARTIFACTS.iterdir() if p.suffix in ('.zip','.msixbundle','.msix','.msixupload'))
     (ARTIFACTS/'SHA256.txt').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in files),encoding='utf-8')
 
 def prepare_release():

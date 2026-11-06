@@ -61,7 +61,7 @@ jobs:
           [xml]$project = Get-Content src/WindowsCalendarWeatherWidget.csproj
           $version = $project.Project.PropertyGroup.Version | Where-Object { $_ }
           if ($env:TAG -ne "v$version") { throw 'Tag and project version differ' }
-          $files = @(Get-ChildItem downloaded -Recurse -File | Where-Object { $_.Extension -in '.zip','.msixbundle' -or $_.Name -eq 'SHA256.txt' } | ForEach-Object FullName)
+          $files = @(Get-ChildItem downloaded -Recurse -File | Where-Object { $_.Extension -in '.zip','.msixbundle','.msixupload' -or $_.Name -eq 'SHA256.txt' } | ForEach-Object FullName)
           if (!$files.Count) { throw 'No release artifacts found' }
           gh release create $env:TAG @files --verify-tag --title "Windows Calendar e Weather Widget $version" --notes-file docs/release-notes.md
           if ($LASTEXITCODE) { throw 'GitHub release failed; never replace an existing version silently' }
@@ -88,10 +88,10 @@ jobs:
           foreach ($key in 'STORE_PRODUCT_ID','TENANT_ID','SELLER_ID','CLIENT_ID','CLIENT_SECRET') {
             if (![Environment]::GetEnvironmentVariable($key)) { throw "Store setup missing: $key. Store publication is NOT complete." }
           }
-          $package = @(Get-ChildItem downloaded -Recurse -Filter '*.msixbundle')
+          $package = @(Get-ChildItem downloaded -Recurse -Filter '*.msixupload')
           if ($package.Count -ne 1) { throw 'Exactly one validated Store bundle is required' }
           msstore reconfigure --tenantId $env:TENANT_ID --sellerId $env:SELLER_ID --clientId $env:CLIENT_ID --clientSecret $env:CLIENT_SECRET
           if ($LASTEXITCODE) { throw 'Store authentication failed' }
-          msstore publish $package[0].FullName -id $env:STORE_PRODUCT_ID
+          msstore publish $package[0].DirectoryName -i $package[0].FullName -id $env:STORE_PRODUCT_ID
           if ($LASTEXITCODE) { throw 'Store submission failed' }
           'Submission sent to Microsoft. Certification and public availability must be checked in Partner Center.' >> $env:GITHUB_STEP_SUMMARY
