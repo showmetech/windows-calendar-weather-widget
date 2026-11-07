@@ -24,6 +24,10 @@ jobs:
           python-version: '3.12'
       - name: Build and regression tests (isolated data, offline providers)
         run: python scripts/release.py build
+      - name: Restore official Microsoft packaging tools
+        run: dotnet restore tools/Packaging/Packaging.csproj
+      - name: Validate MSIX packaging with a separate test-only identity
+        run: python scripts/release.py msix-test
       - name: Build Store bundle when identity is configured
         if: vars.STORE_IDENTITY_NAME != ''
         env:
