@@ -2,6 +2,8 @@
 
 Widget WPF/Fluent para Windows 11 com previsão do tempo, calendários de leitura, bandeja, temas, transparência e inicialização com o Windows.
 
+[Página do aplicativo](https://www.showmetech.com.br/windows-calendar-weather-widget/) · [Política de privacidade](https://www.showmetech.com.br/windows-calendar-weather-widget-privacidade/)
+
 ![Ícone](src/Assets/Calendar-Fluent-preview.png)
 
 ## Compatibilidade
@@ -9,7 +11,7 @@ Widget WPF/Fluent para Windows 11 com previsão do tempo, calendários de leitur
 - Windows 11 22000 ou posterior, x64 ou ARM64. Runtime .NET incluído nos builds de distribuição.
 - Internet para clima e sincronização. Localização do Windows ou cidade manual.
 - Google Calendar exige cliente OAuth válido e consentimento de cada usuário. Outlook/iCloud/outros podem ser adicionados por assinatura ICS ou arquivo local; não há OAuth Microsoft/Apple.
-- Testes locais x64; ARM64 compilado, sem promessa de compatibilidade com todo hardware.
+- Testes locais x64 e execução dos testes do binário ARM64 em Windows ARM64 nativo no GitHub Actions, sem promessa de compatibilidade com todo hardware. O CI também valida empacotamento MSIX com identidade exclusiva de teste, sem instalar ou certificar o pacote.
 
 ## Compilar
 

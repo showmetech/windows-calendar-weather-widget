@@ -1,5 +1,7 @@
 # Privacidade
 
+Política pública específica do produto: https://www.showmetech.com.br/windows-calendar-weather-widget-privacidade/.
+
 O aplicativo mostra previsão do tempo e eventos de calendários escolhidos pelo usuário.
 
 - A localização aproximada do computador é solicitada ao Windows com consentimento. Coordenadas são usadas em consultas ao Open-Meteo; o nome do município pode ser consultado no OpenStreetMap/Nominatim. O usuário pode escolher uma cidade manualmente.

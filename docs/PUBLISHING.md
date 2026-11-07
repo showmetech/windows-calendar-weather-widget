@@ -36,6 +36,8 @@ A revisão empresarial manual pode levar de 2 a 5 dias úteis. Enquanto estiver 
 
 O cliente OAuth atual pertence a um projeto compartilhado com outros aplicativos. Não mudar sua marca, remover escopos ou submeter todos os serviços à verificação em nome apenas deste widget. A distribuição pública deve usar um projeto dedicado, somente com os escopos de leitura de calendários e eventos, políticas específicas e demonstração real do consentimento. Criar o projeto não comprova aprovação Google nem autoriza transferir tokens existentes.
 
+O projeto dedicado `showmetech-calendar-weather` e seu cliente Desktop foram provisionados em 07/11/2026. A configuração foi validada em um perfil isolado protegido por DPAPI; não foi incorporada ao código público nem aplicada à conta já conectada no desktop. A Calendar API, os escopos mínimos, o ícone, o domínio e as páginas públicas do produto foram configurados. O app continua em teste: a primeira autorização real com o novo cliente, o vídeo de demonstração e a revisão pública Google permanecem pendentes. Não publicar o cliente como verificado ou a conexão como testada antes dessa validação.
+
 ## Google Calendar para distribuição
 
 A configuração desta máquina é protegida por usuário e não pode ser copiada. Antes de uma distribuição de uso geral, provisionar um cliente OAuth Desktop próprio para o produto e concluir a verificação de consentimento/escopos exigida pelo Google, ou orientar cada usuário a importar seu próprio JSON. ICS e clima não usam OAuth Google. Não anunciar conexão Google pronta sem configuração e teste de uma instalação nova.
