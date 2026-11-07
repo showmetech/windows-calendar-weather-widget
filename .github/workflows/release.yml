@@ -44,9 +44,34 @@ jobs:
             artifacts/*
             .artifacts/tests/verification.json
           if-no-files-found: error
+  arm64-runtime:
+    needs: build
+    runs-on: windows-11-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-release
+          path: downloaded
+      - name: Run the released ARM64 binary on native Windows ARM64
+        shell: pwsh
+        run: |
+          if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -ne 'Arm64') { throw 'Native ARM64 Windows required' }
+          $archive = @(Get-ChildItem downloaded -Recurse -Filter '*-arm64.zip')
+          if ($archive.Count -ne 1) { throw 'Exactly one ARM64 artifact required' }
+          Expand-Archive -LiteralPath $archive[0].FullName -DestinationPath app
+          $process = Start-Process -FilePath "$PWD/app/WindowsCalendarWeatherWidget.exe" -ArgumentList '--self-test',"$PWD/arm64-tests",'--offline' -PassThru
+          if (!$process.WaitForExit(240000)) { $process.Kill(); throw 'ARM64 self-test timed out' }
+          $report = Get-Content arm64-tests/verification.json -Raw | ConvertFrom-Json
+          if (!$report.passed -or $report.processArchitecture -ne 'Arm64') { throw 'Native ARM64 regression tests failed' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arm64-runtime-verification
+          path: arm64-tests/verification.json
   github-release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: [build, arm64-runtime]
     runs-on: windows-latest
     permissions:
       contents: write

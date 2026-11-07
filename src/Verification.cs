@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 namespace CalendarWeather;
 public static class Verification {
  static void ExpandSettings(System.Windows.DependencyObject root){if(root is System.Windows.Controls.Expander expander)expander.IsExpanded=true;for(int i=0;i<System.Windows.Media.VisualTreeHelper.GetChildrenCount(root);i++)ExpandSettings(System.Windows.Media.VisualTreeHelper.GetChild(root,i));}
- public static async Task Run(string[] args){var index=Array.IndexOf(args,"--self-test");var folder=index+1<args.Length?args[index+1]:Path.Combine(AppContext.BaseDirectory,"Tests");Directory.CreateDirectory(folder);Store.Root=Path.Combine(folder,"test-data");var results=new Dictionary<string,object>();bool offline=args.Contains("--offline");var testService=offline?new Services(new WeatherFixture()):new Services();try{
+ public static async Task Run(string[] args){var index=Array.IndexOf(args,"--self-test");var folder=index+1<args.Length?args[index+1]:Path.Combine(AppContext.BaseDirectory,"Tests");Directory.CreateDirectory(folder);Store.Root=Path.Combine(folder,"test-data");var results=new Dictionary<string,object>();results["processArchitecture"]=System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString();results["osArchitecture"]=System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();bool offline=args.Contains("--offline");var testService=offline?new Services(new WeatherFixture()):new Services();try{
  results["writableControlOutsideInstall"]=Path.GetFullPath(Distribution.ControlPath("test")).StartsWith(Path.GetFullPath(Store.Root),StringComparison.OrdinalIgnoreCase);results["crashRecoveryAndIntentionalExit"]=await RecoverySupervisor.Verify(Path.Combine(folder,"recovery-probe"));results["startupShortcutValidation"]=StartupService.Matches(@"C:\Apps\Widget.exe","--startup",@"C:\Apps\Widget.exe")&&!StartupService.Matches(@"C:\Old\Widget.exe","--startup",@"C:\Apps\Widget.exe")&&!StartupService.Matches(@"C:\Apps\Widget.exe","--exit",@"C:\Apps\Widget.exe");
  var subscriptionTests=await SubscriptionTests.Run();results["subscriptionDetails"]=subscriptionTests;results["subscriptionSupport"]=subscriptionTests.Values.All(value=>value);results["accessibilityDependencyLoads"]=Type.GetType("Accessibility.IAccessible, Accessibility",true)!=null;
  results["hoverDoesNothing"]=new[]{0x200,0x406,0x407}.All(code=>NativeTray.CallbackAction(code,true)==0&&NativeTray.CallbackAction(code,false)==0);results["trayClickAndContextMenu"]=NativeTray.CallbackAction((1L<<16)|0x400,true)==1&&NativeTray.CallbackAction(0x401,true)==1&&NativeTray.CallbackAction(0x7b,true)==2&&NativeTray.CallbackAction(0x202,false)==1&&NativeTray.CallbackAction(0x205,false)==2;

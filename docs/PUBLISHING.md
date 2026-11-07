@@ -28,6 +28,8 @@ Também são necessários testes de instalação/atualização MSIX, consentimen
 
 O WACK está descontinuado e é uma verificação local opcional; a certificação oficial é feita no Partner Center. [Documentação Microsoft](https://learn.microsoft.com/windows/msix/package/packaging-uwp-apps#validate-your-app-package).
 
+O job `arm64-runtime` usa `windows-11-arm`, executa o ZIP ARM64 produzido pelo mesmo build e exige que o próprio processo reporte arquitetura Arm64 e testes aprovados. Ele não autentica contas reais, concede localização nem substitui testes visuais e de instalação em computadores de usuários. [Runners oficiais](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
+
 ## Bloqueios externos e resolução
 
 A revisão empresarial manual pode levar de 2 a 5 dias úteis. Enquanto estiver em análise e sem pedido de documentos, aguardar a Microsoft; se houver ação necessária, cumprir a solicitação exibida. Para falhas ou atraso além da janela indicada, usar o suporte oficial. Não reiniciar o cadastro nem criar inscrições duplicadas. [Fluxo empresarial](https://learn.microsoft.com/windows/apps/publish/whats-new-company-developer).
