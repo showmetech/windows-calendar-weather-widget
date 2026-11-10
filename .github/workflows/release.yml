@@ -24,6 +24,8 @@ jobs:
           python-version: '3.12'
       - name: Build and regression tests (isolated data, offline providers)
         run: python scripts/release.py build
+      - name: Compile opt-in isolated Google consent validation panel
+        run: dotnet build tools/GoogleConsentValidation/GoogleConsentValidation.csproj -c Release -r win-x64 --self-contained true --nologo
       - name: Restore official Microsoft packaging tools
         run: dotnet restore tools/Packaging/Packaging.csproj
       - name: Validate MSIX packaging with a separate test-only identity

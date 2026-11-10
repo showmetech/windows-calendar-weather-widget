@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net10.0-windows10.0.19041.0</TargetFramework><UseWPF>true</UseWPF><Nullable>enable</Nullable><WindowsSdkPackageVersion>10.0.19041.57</WindowsSdkPackageVersion><Version>1.0.0</Version></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../../src/WindowsCalendarWeatherWidget.csproj" /></ItemGroup>
+  <ItemGroup><KnownFrameworkReference Update="Microsoft.NETCore.App;Microsoft.WindowsDesktop.App;Microsoft.WindowsDesktop.App.WPF;Microsoft.WindowsDesktop.App.WindowsForms;Microsoft.AspNetCore.App" LatestRuntimeFrameworkVersion="10.0.13" /></ItemGroup>
+</Project>

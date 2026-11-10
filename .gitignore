@@ -22,4 +22,5 @@ calendar-*.json
 weather.json
 .env*
 __pycache__/
+**/public-oauth-profile/
 
