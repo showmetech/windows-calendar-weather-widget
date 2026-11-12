@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.Json;
 namespace CalendarWeather;
 public sealed class Settings {
+ double opacityPercent=100;
+ public double OpacityPercent {get=>opacityPercent;set=>opacityPercent=double.IsFinite(value)?Math.Clamp(value,0,100):100;}
  public int SchemaVersion {get;set;}
  public int LayoutVersion {get;set;}
  public bool StartWithWindows {get;set;}=true; public string StartupStatus {get;set;}="";
