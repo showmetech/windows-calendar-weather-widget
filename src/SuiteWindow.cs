@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -10,8 +10,7 @@ internal static class SuiteWindow {
  public static Brush Material(Window window,HwndSource source,int material,bool light,bool transparency,bool contrast,out bool success){
   success=!contrast;window.Background=Brushes.Transparent;if(source!=null)source.CompositionTarget.BackgroundColor=Colors.Transparent;
   if(contrast)return SystemColors.WindowBrush;
-  byte alpha=material==1?(byte)210:material==2?(byte)145:(byte)180;
-  return new SolidColorBrush(light?Color.FromArgb(alpha,243,243,243):Color.FromArgb(alpha,32,32,32));
+  return new SolidColorBrush(light?Color.FromRgb(243,243,243):Color.FromRgb(32,32,32));
  }
  [StructLayout(LayoutKind.Sequential)]struct Margins{public int Left,Right,Top,Bottom;}
  [DllImport("dwmapi.dll")]static extern int DwmSetWindowAttribute(IntPtr hwnd,int attribute,ref int value,int size);
