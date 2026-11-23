@@ -94,7 +94,7 @@ jobs:
           if ($env:TAG -ne "v$version") { throw 'Tag and project version differ' }
           $files = @(Get-ChildItem downloaded -Recurse -File | Where-Object { $_.Extension -in '.zip','.msixbundle','.msixupload' -or $_.Name -eq 'SHA256.txt' } | ForEach-Object FullName)
           if (!$files.Count) { throw 'No release artifacts found' }
-          gh release create $env:TAG @files --verify-tag --title "Windows Calendar e Weather Widget $version" --notes-file docs/release-notes.md
+          gh release create $env:TAG @files --verify-tag --title "SMT Calendar Widget $version" --notes-file docs/release-notes.md
           if ($LASTEXITCODE) { throw 'GitHub release failed; never replace an existing version silently' }
   store:
     if: startsWith(github.ref, 'refs/tags/v')

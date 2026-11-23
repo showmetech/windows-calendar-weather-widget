@@ -24,7 +24,7 @@ public sealed partial class Services {
  Open("https://accounts.google.com/o/oauth2/v2/auth?"+Query(new(){["client_id"]=id,["redirect_uri"]=redirect,["response_type"]="code",["scope"]=scope,["access_type"]="offline",["prompt"]="consent select_account",["state"]=state,["code_challenge"]=challenge,["code_challenge_method"]="S256"}));
  var ctx=await listener.GetContextAsync().WaitAsync(TimeSpan.FromMinutes(3),ct);
  var valid=ctx.Request.QueryString["state"]==state;var code=ctx.Request.QueryString["code"];
- var html=Encoding.UTF8.GetBytes("<meta charset=utf-8><title>Calendar e Weather Widget</title><p>Volte ao aplicativo para conferir o resultado da conexão.</p>");
+ var html=Encoding.UTF8.GetBytes("<meta charset=utf-8><title>SMT Calendar Widget</title><p>Volte ao aplicativo para conferir o resultado da conexão.</p>");
  ctx.Response.ContentType="text/html; charset=utf-8";await ctx.Response.OutputStream.WriteAsync(html,ct);ctx.Response.Close();
  if(!valid||string.IsNullOrEmpty(code))throw new InvalidOperationException("Autorização cancelada ou resposta inválida.");
  using var t=await Post(new(){["client_id"]=id,["client_secret"]=secret,["code"]=code,["code_verifier"]=verifier,["redirect_uri"]=redirect,["grant_type"]="authorization_code"});
@@ -40,7 +40,7 @@ public sealed partial class Services {
  using var token=await Post(new(){["client_id"]=a.ClientId,["client_secret"]=a.ClientSecret,["refresh_token"]=a.RefreshToken,["grant_type"]="refresh_token"});
  var bearer=token.RootElement.GetProperty("access_token").GetString()!;var calendars=new List<CalendarInfo>();string page="";
  do{using var j=await Get("https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250&pageToken="+Uri.EscapeDataString(page),bearer);
- foreach(var c in j.RootElement.GetProperty("items").EnumerateArray())calendars.Add(new(a.Key+"|"+Text(c,"id"),Text(c,"summary"),Text(c,"backgroundColor","#8bb9ff")));
+ if(j.RootElement.TryGetProperty("items",out var listed))foreach(var c in listed.EnumerateArray())calendars.Add(new(a.Key+"|"+Text(c,"id"),Text(c,"summary"),Text(c,"backgroundColor","#8bb9ff")));
  page=Text(j.RootElement,"nextPageToken");}while(page!="");
  var events=new List<AgendaEvent>();foreach(var cal in calendars){page="";do{
  var raw=cal.Id[(a.Key.Length+1)..];var url="https://www.googleapis.com/calendar/v3/calendars/"+Uri.EscapeDataString(raw)+"/events?singleEvents=true&orderBy=startTime&maxResults=250&timeMin="+Uri.EscapeDataString(DateTimeOffset.Now.AddDays(-1).ToString("o"))+"&timeMax="+Uri.EscapeDataString(DateTimeOffset.Now.AddDays(14).ToString("o"))+"&pageToken="+Uri.EscapeDataString(page);

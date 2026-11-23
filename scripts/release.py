@@ -25,7 +25,7 @@ def sdk_tool(name):
     return str(found[0])
 
 def reject_private_files(folder):
-    forbidden={'.dat','.pfx','.p12'}
+    forbidden={'.dat','.pfx','.p12','.pdb'}
     for path in folder.rglob('*'):
         if path.is_file() and (path.suffix.lower() in forbidden or 'client_secret' in path.name.lower() or path.name in ('settings.json','weather.json','accounts.json') or path.name.startswith('calendar-')):
             raise RuntimeError('Private file in distribution: '+str(path.relative_to(folder)))
@@ -51,7 +51,7 @@ def identity():
     value=json.loads(path.read_text(encoding='utf-8-sig')) if path.exists() else {
         'identityName':os.environ.get('STORE_IDENTITY_NAME',''), 'publisher':os.environ.get('STORE_PUBLISHER',''),
         'publisherDisplayName':os.environ.get('STORE_PUBLISHER_DISPLAY_NAME',''), 'productId':os.environ.get('STORE_PRODUCT_ID',''),
-        'displayName':'Windows Calendar e Weather Widget'}
+        'displayName':'SMT Calendar Widget'}
     missing=[key for key in ('identityName','publisher','publisherDisplayName','productId') if not value.get(key)]
     if missing: raise RuntimeError('Partner Center configuration missing: '+', '.join(missing))
     return value
