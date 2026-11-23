@@ -12,7 +12,7 @@ This is a release candidate, not a claim of universal compatibility or complete 
 | City change/manual refresh is dropped during an active request | Busy returns immediately; response uses mutable settings | Queue forced refresh, capture requested coordinates/name, discard stale responses | refreshDoesNotLoseNewCityRequest: false before, true after |
 | Google account with an empty calendar list fails | Assumes the optional items array is present | Treat missing items as an empty list | emptyGoogleCalendarList: false before, true after |
 | ICS without URL looks interactive; event action lacks keyboard control | Every event has a mouse-only action | HTTPS-only action rendered as a named Button; plain cards otherwise | eventLinksUseHttpsOnly; native keyboard review pending |
-| Installed names differ from Store | Old release displayName fallback and tray tooltip | SMT Calendar Widget in generated manifest, app title, callback and tooltip | Manifest assertions; installed update pending |
+| Installed names differ from Store | Saved legacy displayName, release fallback and tray tooltip | Versioned name overrides saved displayName without rewriting the configuration; app title, callback and tooltip aligned | Legacy-file and environment regressions, three manifest names, identity/Publisher/TaskId preservation; installed update pending |
 
 Weather HTTP 503 retains the previous cache byte-for-byte and shows a failure state. Tests use controlled offline handlers, not real Google credentials.
 

@@ -4,6 +4,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 PROJECT=ROOT/'src'/'WindowsCalendarWeatherWidget.csproj'
 ARTIFACTS=ROOT/'artifacts'
 STAGE=ROOT/'.artifacts'
+DISPLAY_NAME='SMT Calendar Widget'
 
 def run(*args,timeout=None):
     subprocess.run([str(a) for a in args],cwd=ROOT,check=True,timeout=timeout)
@@ -31,6 +32,7 @@ def reject_private_files(folder):
             raise RuntimeError('Private file in distribution: '+str(path.relative_to(folder)))
 
 def build():
+    run(sys.executable,ROOT/'scripts'/'test_release_identity.py')
     ARTIFACTS.mkdir(exist_ok=True); STAGE.mkdir(exist_ok=True)
     for arch in ('x64','arm64'):
         output=STAGE/arch
@@ -51,9 +53,10 @@ def identity():
     value=json.loads(path.read_text(encoding='utf-8-sig')) if path.exists() else {
         'identityName':os.environ.get('STORE_IDENTITY_NAME',''), 'publisher':os.environ.get('STORE_PUBLISHER',''),
         'publisherDisplayName':os.environ.get('STORE_PUBLISHER_DISPLAY_NAME',''), 'productId':os.environ.get('STORE_PRODUCT_ID',''),
-        'displayName':'SMT Calendar Widget'}
+        'displayName':DISPLAY_NAME}
     missing=[key for key in ('identityName','publisher','publisherDisplayName','productId') if not value.get(key)]
     if missing: raise RuntimeError('Partner Center configuration missing: '+', '.join(missing))
+    value['displayName']=DISPLAY_NAME
     return value
 
 def manifest(config,arch,destination):
