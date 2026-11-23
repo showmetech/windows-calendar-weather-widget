@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -15,7 +15,7 @@ namespace CalendarWeather;
 public sealed partial class Services {
  public async Task<Account> Connect(string file,CancellationToken ct){
  if(!string.IsNullOrEmpty(file))GoogleClientStore.Import(file);
- var client=GoogleClientStore.Load()??throw new InvalidOperationException("O cliente Google ainda não foi configurado.");var id=client.ClientId;var secret=client.ClientSecret;
+ var client=GoogleClientStore.Load()??throw new InvalidOperationException(GoogleClientStore.MissingConfigurationMessage);var id=client.ClientId;var secret=client.ClientSecret;
  var verifier=Base64(RandomNumberGenerator.GetBytes(48));var state=Base64(RandomNumberGenerator.GetBytes(32));
  var probe=new TcpListener(IPAddress.Loopback,0);probe.Start();var port=((IPEndPoint)probe.LocalEndpoint).Port;probe.Stop();
  var redirect=$"http://127.0.0.1:{port}/";using var listener=new HttpListener();listener.Prefixes.Add(redirect);listener.Start();

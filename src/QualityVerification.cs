@@ -28,6 +28,22 @@ internal static class QualityVerification {
   window.CloseSettings();window.ShowSettings();await Task.Delay(700);
   result["settingsCanReopenDuringClosingAnimation"]=window.SettingsVisible;
   window.CloseSettings();await Task.Delay(400);
+  int files=0,oauth=0;bool missing=false,emptyClientArgument=true;
+  using(var googlePanel=new SettingsPanel(window,window.settings,window.accounts,new Services(new WeatherFixture()),()=>{files++;return null;},(file,ct)=>{oauth++;emptyClientArgument&=file=="";return missing?Task.FromException<Account>(new InvalidOperationException(GoogleClientStore.MissingConfigurationMessage)):Task.FromCanceled<Account>(new CancellationToken(true));})){
+   var host=new Window{Content=googlePanel,Width=360,Height=460,ShowInTaskbar=false};host.Show();googlePanel.SelectPage(3);host.UpdateLayout();
+   var normal=Find<Button>(googlePanel).Single(b=>AutomationProperties.GetName(b)=="Conectar calendário");normal.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await Task.Delay(80);
+   result["normalGoogleConnectNeverOpensFilePicker"]=files==0;
+   result["normalGoogleConnectInvokesAuthorization"]=oauth==1&&emptyClientArgument;
+   result["googleAuthorizationCancellationShown"]=Find<TextBlock>(googlePanel).Any(x=>x.Text=="Conexão cancelada.");
+   missing=true;normal.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await Task.Delay(80);host.UpdateLayout();
+   result["missingGoogleConfigurationDoesNotOpenPicker"]=files==0&&Find<TextBlock>(googlePanel).Any(x=>x.Text==GoogleClientStore.MissingConfigurationMessage&&x.IsVisible);
+   var advanced=Find<Button>(googlePanel).Single(b=>AutomationProperties.GetName(b)=="Configuração Google avançada — importar cliente OAuth");advanced.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+   result["advancedGoogleConfigurationIsSeparate"]=files==1&&oauth==2;
+   host.Close();
+  }
+  result["productGoogleClientMetadata"]=GoogleClientStore.ProductClient(new[]{new KeyValuePair<string,string?>("SMT.GoogleOAuth.DesktopClientId","synthetic.apps.googleusercontent.com"),new KeyValuePair<string,string?>("SMT.GoogleOAuth.DesktopClientSecret","synthetic-public-desktop-setting")})?.ClientId=="synthetic.apps.googleusercontent.com"&&GoogleClientStore.ProductClient(Array.Empty<KeyValuePair<string,string?>>())==null;
+  var productMetadata=System.Reflection.CustomAttributeExtensions.GetCustomAttributes<System.Reflection.AssemblyMetadataAttribute>(System.Reflection.Assembly.GetEntryAssembly()!).Select(x=>new KeyValuePair<string,string?>(x.Key,x.Value)).ToList();
+  result["productGoogleClientBuildContract"]=(GoogleClientStore.ProductClient(productMetadata)==null)==(GoogleClientStore.Load()==null);
   var handler=new DelayedWeather();var test=new MainWindow(new Services(handler));
   test.settings.AutomaticLocation=false;test.settings.LocationConfigured=true;test.settings.City="Cidade A";
   var first=test.Refresh(true);await handler.Started.Task;

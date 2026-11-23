@@ -25,12 +25,12 @@ Weather HTTP 503 retains the previous cache byte-for-byte and shows a failure st
 | Visual settings | Theme renders, opacity default, settings layout | Native focus order, contrast/high-contrast and opacity interaction |
 | Location settings | Visible failure, city label, manual-refresh race | Permission allow/deny and real city search on final build |
 | Refresh settings | Both intervals, five-minute default, persistence | Native control interaction |
-| Accounts settings | Correct entry page, seven fixture accounts, pagination | OAuth import/cancel/browser return and ICS file chooser |
+| Accounts settings | Correct entry page, seven fixture accounts, pagination; normal Google button never calls file picker, invokes authorization and handles cancellation/missing setup; advanced import separate | Real OAuth browser return and ICS file chooser |
 | Calendar settings | Nineteen fixture calendars and pagination without scrolling | Real account/calendar selection persistence |
 | Settings overlay | Above-widget geometry, interrupted close/reopen, return | Z-order with other apps, small work areas, focus after dialogs |
 | Tray / lifecycle | Hover dispatch, menu dispatch, reopen, intentional exit and isolated crash recovery | Physical tray input and next Windows login |
 | ICS | Recurrences, exceptions, cancellation, DST, all-day exclusive end, URL validation and protected feed address | User-authorized subscription on final installation |
-| Google | Read-only GETs, protected-account refresh mock, empty calendar list | Per-machine client and first user consent; real reads and reopening |
+| Google | Read-only GETs, protected-account refresh mock, empty calendar list | Provision existing product Desktop client in release build; first user consent, real reads and reopening |
 | Distribution | Self-contained x64/ARM64, private-file rejection, MSIX semantic validation | Native ARM64 run, Store certification, install/update and rollback readback |
 
 The notebook's installed 1.8.0.0 separately passed its isolated regression suite and 17 runtime-handler probes. These results do not certify 1.8.1. The public identity, startup TaskId, tray GUID and data paths are preserved.
@@ -44,3 +44,5 @@ The notebook's installed 1.8.0.0 separately passed its isolated regression suite
 - Use the Codex browser for Partner Center. If unavailable, do not represent a local MSIX or GitHub commit as a Store submission.
 
 Design review follows Fluent 2 structure, meaningful text, keyboard/focus and contrast guidance: https://fluent2.microsoft.design/accessibility . Rendered fixture images are evidence of the exercised layout, not of the user's full desktop composition.
+
+Google UX follow-up: the normal account action no longer imports a client JSON. Product configuration is supplied by the developer at build time; import is a separately named advanced action. See GOOGLE-PRODUCT-SETUP.md. Tests exercise the actual button handler with controlled picker/authorization boundaries and never open real OAuth in offline mode.
