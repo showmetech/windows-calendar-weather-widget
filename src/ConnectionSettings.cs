@@ -14,14 +14,15 @@ public sealed partial class SettingsPanel {
  static void Primary(Button button){button.Background=SystemColors.AccentColorBrush;var c=SystemColors.AccentColor;button.Foreground=c.R*.2126+c.G*.7152+c.B*.0722>145?Brushes.Black:Brushes.White;}
  void BuildConnections(StackPanel page,Func<string,CancellationToken,Task<Account>> authorize){
   var home=new StackPanel();var subscription=new StackPanel{Visibility=Visibility.Collapsed};page.Children.Add(home);page.Children.Add(subscription);
-  home.Children.Add(MainWindow.Label("Seus calendários",16,true));home.Children.Add(Hint("Conecte sua conta para mostrar os próximos eventos. Acesso somente de leitura."));home.Children.Add(accountPanel);
+  var details=new StackPanel();home.Children.Add(details);details.Children.Add(MainWindow.Label("Seus calendários",16,true));details.Children.Add(Hint("Conecte sua conta para mostrar os próximos eventos. Acesso somente de leitura."));details.Children.Add(accountPanel);
   var google=ActionButton("\uE8FA","Conectar conta Google","Conectar conta Google",()=>{});google.Margin=new Thickness(0,8,0,4);google.MinHeight=36;Primary(google);home.Children.Add(google);
   var other=ActionButton("\uE710","Adicionar assinatura ou arquivo","Adicionar assinatura ou arquivo",()=>{home.Visibility=Visibility.Collapsed;subscription.Visibility=Visibility.Visible;accountStatus.Text="";});home.Children.Add(other);
+  Button? reset=null;reset=ActionButton("\uE72B","Ver contas conectadas","Ver contas conectadas",()=>{details.Visibility=Visibility.Visible;reset!.Visibility=Visibility.Collapsed;accountStatus.Text="";});reset.Visibility=Visibility.Collapsed;home.Children.Add(reset);
   var cancel=ActionButton("\uE711","Cancelar conexão","Cancelar conexão",()=>connectionCancellation?.Cancel());cancel.Visibility=Visibility.Collapsed;home.Children.Add(cancel);
   google.Click+=async(_,_)=>{
    if(connectionCancellation!=null)return;
    using var attempt=CancellationTokenSource.CreateLinkedTokenSource(cancellation.Token);connectionCancellation=attempt;
-   google.IsEnabled=false;other.Visibility=Visibility.Collapsed;cancel.Visibility=Visibility.Visible;accountStatus.Text="No navegador, escolha sua conta Google e autorize a leitura da agenda.";
+   details.Visibility=Visibility.Collapsed;reset.Visibility=Visibility.Collapsed;google.IsEnabled=false;other.Visibility=Visibility.Collapsed;cancel.Visibility=Visibility.Visible;accountStatus.Text="No navegador, escolha sua conta Google e autorize a leitura da agenda.";
    try{
     var account=await authorize("",attempt.Token);attempt.Token.ThrowIfCancellationRequested();if(disposed)return;
     var old=accounts.FirstOrDefault(a=>a.Provider=="Google"&&string.Equals(a.Email,account.Email,StringComparison.OrdinalIgnoreCase));
@@ -32,7 +33,7 @@ public sealed partial class SettingsPanel {
    catch(TimeoutException){if(!disposed)accountStatus.Text="A autorização expirou. Clique em Conectar conta Google para tentar novamente.";}
    catch(InvalidOperationException ex){if(!disposed)accountStatus.Text=ex.Message;}
    catch{if(!disposed)accountStatus.Text="Não foi possível conectar ao Google. Confira a internet e tente novamente.";}
-   finally{connectionCancellation=null;if(!disposed){google.IsEnabled=true;other.Visibility=Visibility.Visible;cancel.Visibility=Visibility.Collapsed;RefreshCalendars();}}
+   finally{connectionCancellation=null;if(!disposed){google.IsEnabled=true;other.Visibility=Visibility.Visible;cancel.Visibility=Visibility.Collapsed;reset.Visibility=Visibility.Visible;RefreshCalendars();}}
   };
   var back=ActionButton("\uE72B","Voltar às contas","Voltar às contas",()=>{subscription.Visibility=Visibility.Collapsed;home.Visibility=Visibility.Visible;accountStatus.Text="";});subscription.Children.Add(back);
   subscription.Children.Add(Hint("Use um link de assinatura do Outlook, iCloud ou outro serviço, ou um arquivo .ics."));

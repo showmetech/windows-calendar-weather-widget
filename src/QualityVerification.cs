@@ -30,14 +30,15 @@ internal static class QualityVerification {
   result["settingsCanReopenDuringClosingAnimation"]=window.SettingsVisible;
   window.CloseSettings();await Task.Delay(400);
   int files=0,oauth=0;bool missing=false,emptyClientArgument=true;
-  using(var googlePanel=new SettingsPanel(window,window.settings,window.accounts,new Services(new WeatherFixture()),()=>{files++;return null;},(file,ct)=>{oauth++;emptyClientArgument&=file=="";return missing?Task.FromException<Account>(new InvalidOperationException(GoogleClientStore.MissingConfigurationMessage)):Task.FromCanceled<Account>(new CancellationToken(true));})){
-   var host=new Window{Content=googlePanel,Width=360,Height=460,ShowInTaskbar=false};host.Show();googlePanel.SelectPage(3);host.UpdateLayout();
+  using(var googlePanel=new SettingsPanel(window,window.settings,Enumerable.Range(1,7).Select(i=>new Account{Email="Conta de exemplo "+i}).ToList(),new Services(new WeatherFixture()),()=>{files++;return null;},(file,ct)=>{oauth++;emptyClientArgument&=file=="";return missing?Task.FromException<Account>(new InvalidOperationException(GoogleClientStore.MissingConfigurationMessage)):Task.FromCanceled<Account>(new CancellationToken(true));})){
+   var host=new Window{Content=new Border{Padding=new Thickness(20,64,20,12),Child=googlePanel},Width=360,Height=460,WindowStyle=WindowStyle.None,ShowInTaskbar=false};host.Show();googlePanel.SelectPage(3);host.UpdateLayout();
    var normal=Find<Button>(googlePanel).Single(b=>AutomationProperties.GetName(b)=="Conectar conta Google");normal.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await Task.Delay(80);
    result["normalGoogleConnectNeverOpensFilePicker"]=files==0;
    result["normalGoogleConnectInvokesAuthorization"]=oauth==1&&emptyClientArgument;
    result["googleAuthorizationCancellationShown"]=Find<TextBlock>(googlePanel).Any(x=>x.Text=="Conexão cancelada. Você pode tentar novamente.");
    missing=true;normal.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await Task.Delay(80);host.UpdateLayout();
    result["missingGoogleConfigurationDoesNotOpenPicker"]=files==0&&Find<TextBlock>(googlePanel).Any(x=>x.Text==GoogleClientStore.MissingConfigurationMessage&&x.IsVisible);
+   result["googleErrorAndActionsFitWithManyAccounts"]=Find<FrameworkElement>(googlePanel).Where(x=>x.IsVisible&&(x is TextBlock||x is Button)).All(x=>{var p=x.TransformToAncestor(googlePanel).Transform(new Point(x.ActualWidth,x.ActualHeight));return p.X<=googlePanel.ActualWidth+1&&p.Y<=googlePanel.ActualHeight+1;});
    result["googleDeveloperSetupNotExposed"]=!Find<Button>(googlePanel).Any(b=>AutomationProperties.GetName(b).Contains("importar cliente OAuth"))&&files==0&&oauth==2;
    host.Close();
   }
