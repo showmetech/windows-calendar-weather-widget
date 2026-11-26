@@ -19,6 +19,7 @@ public static class Verification {
  results["desktopAndTrayShareIcon"]=App.TrayFileForTheme(true)=="Calendar-Fluent.ico"&&App.TrayFileForTheme(false)=="Calendar-Fluent.ico"&&File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Assets","Calendar.ico")).SequenceEqual(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Assets","Calendar-Fluent.ico")));
  results["automaticRefreshFromProtectedAccount"]=await ReconnectTests.Run();
  var payload=Encoding.UTF8.GetBytes("widget-dpapi-test");var encrypted=Store.Protect(payload);results["dpapiRoundTrip"]=Store.Unprotect(encrypted).SequenceEqual(payload)&&!encrypted.SequenceEqual(payload);
+ results["googleProductConfiguration"]=new{Configured=GoogleClientStore.Load()!=null};
  Store.Save("settings.json",new Settings{City="São Paulo",Theme="Dark",SchemaVersion=3,LocationConfigured=true});results["settingsPersistence"]=Store.Read("settings.json",new Settings()).Theme=="Dark";
  var now=DateTimeOffset.Now;var expired=new AgendaEvent("expired","c","Agenda","#75ACFF","Encerrado",now.AddHours(-2),now.AddHours(-1),false,"");var current=expired with{Id="active",Start=now.AddMinutes(-10),End=now.AddMinutes(10)};results["ongoingEventIncluded"]=Store.Upcoming(new[]{expired,current},now).Single().Id=="active";
  using var j=JsonDocument.Parse("{\"dateTime\":\"2026-10-24T14:00:00-03:00\"}");results["timezoneParsing"]=Services.ParseDate(j.RootElement).UtcDateTime.Hour==17;
