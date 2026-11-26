@@ -23,6 +23,7 @@ internal static class QualityVerification {
   connect.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await Task.Delay(400);
   var panel=Application.Current.Windows.Cast<Window>().Where(w=>w!=window).SelectMany(w=>Find<SettingsPanel>(w)).Single();
   result["connectOpensAccountsPage"]=panel.Pages[3].IsVisible;
+  result["settingsHeightRemainsCompact"]=Window.GetWindow(panel).ActualHeight<=460.5;
   window.settings.LocationStatus="Localização bloqueada pelo Windows. Escolha uma cidade.";
   panel.RefreshState();panel.SelectPage(1);panel.UpdateLayout();
   result["locationFailureVisible"]=Find<TextBlock>(panel).Any(x=>x.Text==window.settings.LocationStatus&&x.IsVisible);
