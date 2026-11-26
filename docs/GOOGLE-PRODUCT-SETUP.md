@@ -2,7 +2,7 @@
 
 Normal Google connection calls the product's OAuth flow directly. It never opens a file picker. Without product configuration it shows an explicit developer-configuration error; it does not open an unrelated Google login page or claim that the account is connected.
 
-The separate **Avançado: configurar Google** action imports a Desktop client for support/development only. It does not authorize an account. Existing per-user protected client settings and existing account refresh credentials remain compatible.
+The separate **AvanÃ§ado: configurar Google** action imports a Desktop client for support/development only. It does not authorize an account. Existing per-user protected client settings and existing account refresh credentials remain compatible.
 
 ## Required product provisioning
 
