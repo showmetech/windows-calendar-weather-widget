@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace CalendarWeather;
 internal sealed class CalendarTestHandler:HttpMessageHandler {
- public bool Refreshed;public bool WrongMethod;
+ public bool Refreshed;public bool WrongMethod;public bool EmptyCalendars;
  protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken cancellationToken){var path=request.RequestUri!.AbsolutePath;string payload;
  if(path=="/token"){var body=await request.Content!.ReadAsStringAsync(cancellationToken);Refreshed=request.Method==HttpMethod.Post&&body.Contains("grant_type=refresh_token")&&body.Contains("refresh_token=synthetic-refresh");payload="{\"access_token\":\"synthetic-access\"}";}
- else if(path.EndsWith("calendarList")){WrongMethod|=request.Method!=HttpMethod.Get;payload="{\"items\":[{\"id\":\"primary\",\"summary\":\"Calendário de teste\",\"backgroundColor\":\"#80AAFF\"}]}";}
+ else if(path.EndsWith("calendarList")){WrongMethod|=request.Method!=HttpMethod.Get;payload=EmptyCalendars?"{}":"{\"items\":[{\"id\":\"primary\",\"summary\":\"Calendário de teste\",\"backgroundColor\":\"#80AAFF\"}]}";}
  else{WrongMethod|=request.Method!=HttpMethod.Get;payload="{\"items\":[{\"id\":\"example\",\"summary\":\"Evento sintético\",\"start\":{\"dateTime\":\""+DateTimeOffset.Now.AddHours(1).ToString("o")+"\"},\"end\":{\"dateTime\":\""+DateTimeOffset.Now.AddHours(2).ToString("o")+"\"}}]}";}
  return new HttpResponseMessage(HttpStatusCode.OK){Content=new StringContent(payload,Encoding.UTF8,"application/json")};}
 }
