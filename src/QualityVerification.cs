@@ -18,11 +18,18 @@ internal static class QualityVerification {
  }
  internal static async Task<Dictionary<string,bool>> Run(MainWindow window){
   var result=new Dictionary<string,bool>();
+  var savedAccounts=window.accounts.ToArray();var savedSnapshots=window.snapshots.ToArray();
+  try{
+   window.accounts.Clear();window.snapshots.Clear();var linked=new Account{Key="linked-card-fixture",Email="Conta fictícia"};window.accounts.Add(linked);var at=DateTimeOffset.Now;
+   window.snapshots[linked.Key]=new CalendarSnapshot(new(){new("linked",linked.Key+"|primary","Agenda fictícia","#4285F4","Evento com link HTTPS",at.AddHours(1),at.AddHours(2),false,"https://example.test/event")},new(),at);
+   window.Render();window.UpdateLayout();result["httpsEventCardHasOneParentAndKeyboardAction"]=Find<Button>(window).Any(b=>AutomationProperties.GetName(b).Contains("Evento com link HTTPS")&&b.IsEnabled);
+  }catch(InvalidOperationException){result["httpsEventCardHasOneParentAndKeyboardAction"]=false;}
+  finally{window.accounts.Clear();window.accounts.AddRange(savedAccounts);window.snapshots.Clear();foreach(var item in savedSnapshots)window.snapshots[item.Key]=item.Value;window.Render();}
   foreach(var check in await GoogleFlowVerification.Run())result[check.Key]=check.Value;
   var connect=Find<Button>(window).First(x=>AutomationProperties.GetName(x)=="Conectar calendário");
   connect.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));await Task.Delay(400);
   var panel=Application.Current.Windows.Cast<Window>().Where(w=>w!=window).SelectMany(w=>Find<SettingsPanel>(w)).Single();
-  result["connectOpensAccountsPage"]=panel.Pages[3].IsVisible;
+  result["connectOpensAccountsPage"]=panel.Pages[3].IsVisible;foreach(var check in FluentVerification.Run(panel,window))result[check.Key]=check.Value;panel.SelectPage(3);
   result["settingsHeightRemainsCompact"]=Window.GetWindow(panel).ActualHeight<=460.5;
   window.settings.LocationStatus="Localização bloqueada pelo Windows. Escolha uma cidade.";
   panel.RefreshState();panel.SelectPage(1);panel.UpdateLayout();

@@ -1,3 +1,14 @@
+## SMT Calendar Widget 1.9.0
+
+- Three primary settings sections: Widget, Weather and Calendar, with native keyboard navigation and focused secondary flows.
+- Fluent 2 typography, opaque surfaces, accessible accent contrast, themed switches and visible focus/hover states.
+- Explicit current location, separate city search/confirmation, clear empty and failure states, and refresh progress feedback.
+- Calendar labels and readable event titles. Account/calendar pagination keeps settings compact.
+- Optional reduced motion, respecting Windows animation preferences. Adaptive settings placement stays within the work area on smaller screens.
+- Regression coverage for light/dark themes, 320/360/540 DIP widths, 420/460 DIP heights, 19 calendars, 4,096 accent colors and mixed-DPI placement calculations.
+
+Each user must authorize their own Google account. Offline tests and layout captures do not prove live authorization, installation, next-logon startup or Microsoft Store certification.
+
 ## SMT Calendar Widget 1.8.1
 
 - Redesigned account settings with a named Google connection button, cancellation, retry messages and a separate flow for calendar subscriptions and iCalendar files.

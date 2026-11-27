@@ -2,8 +2,8 @@
 import argparse, hashlib, json, os, pathlib, re, shutil, subprocess, sys, xml.etree.ElementTree as ET, zipfile
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 PROJECT=ROOT/'src'/'WindowsCalendarWeatherWidget.csproj'
-ARTIFACTS=ROOT/'artifacts'
-STAGE=ROOT/'.artifacts'
+ARTIFACTS=pathlib.Path(os.environ.get('SMT_CALENDAR_ARTIFACTS_ROOT',str(ROOT/'artifacts')))
+STAGE=pathlib.Path(os.environ.get('SMT_CALENDAR_STAGE_ROOT',str(ROOT/'.artifacts')))
 DISPLAY_NAME='SMT Calendar Widget'
 
 def run(*args,timeout=None):
@@ -33,7 +33,7 @@ def reject_private_files(folder):
 
 def build():
     run(sys.executable,ROOT/'scripts'/'test_release_identity.py')
-    ARTIFACTS.mkdir(exist_ok=True); STAGE.mkdir(exist_ok=True)
+    ARTIFACTS.mkdir(parents=True,exist_ok=True); STAGE.mkdir(parents=True,exist_ok=True)
     for arch in ('x64','arm64'):
         output=STAGE/arch
         if output.exists(): shutil.rmtree(output)

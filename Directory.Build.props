@@ -1,0 +1,9 @@
+<Project>
+  <!-- Optional local build cache for source checkouts on streamed/synced drives. -->
+  <PropertyGroup Condition="'$(SMT_CALENDAR_BUILD_ROOT)' != ''">
+    <BaseIntermediateOutputPath>$(SMT_CALENDAR_BUILD_ROOT)/obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    <BaseOutputPath>$(SMT_CALENDAR_BUILD_ROOT)/bin/$(MSBuildProjectName)/</BaseOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/bin/**;**/obj/**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

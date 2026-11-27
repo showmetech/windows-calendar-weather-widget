@@ -32,14 +32,18 @@ O job `arm64-runtime` usa `windows-11-arm`, executa o ZIP ARM64 produzido pelo m
 
 ## Bloqueios externos e resolução
 
-A revisão empresarial manual pode levar de 2 a 5 dias úteis. Enquanto estiver em análise e sem pedido de documentos, aguardar a Microsoft; se houver ação necessária, cumprir a solicitação exibida. Para falhas ou atraso além da janela indicada, usar o suporte oficial. Não reiniciar o cadastro nem criar inscrições duplicadas. [Fluxo empresarial](https://learn.microsoft.com/windows/apps/publish/whats-new-company-developer).
-
-O cliente OAuth atual pertence a um projeto compartilhado com outros aplicativos. Não mudar sua marca, remover escopos ou submeter todos os serviços à verificação em nome apenas deste widget. A distribuição pública deve usar um projeto dedicado, somente com os escopos de leitura de calendários e eventos, políticas específicas e demonstração real do consentimento. Criar o projeto não comprova aprovação Google nem autoriza transferir tokens existentes.
-
-O projeto dedicado `showmetech-calendar-weather` e seu cliente Desktop foram provisionados em 07/11/2026. A configuração foi validada em um perfil isolado protegido por DPAPI; não foi incorporada ao código público nem aplicada à conta já conectada no desktop. A Calendar API, os escopos mínimos, o ícone, o domínio e as páginas públicas do produto foram configurados. O app continua em teste: a primeira autorização real com o novo cliente, o vídeo de demonstração e a revisão pública Google permanecem pendentes. Não publicar o cliente como verificado ou a conexão como testada antes dessa validação.
+Usar sempre o produto e o publicador empresarial existentes. Aprovação da conta, upload, certificação e disponibilidade pública são etapas diferentes. Uma falha de credenciais da API Store ocorre antes do envio e não autoriza criar outra conta ou produto.
 
 ## Google Calendar para distribuição
 
-A configuração desta máquina é protegida por usuário e não pode ser copiada. Antes de uma distribuição de uso geral, provisionar um cliente OAuth Desktop próprio para o produto e concluir a verificação de consentimento/escopos exigida pelo Google, ou orientar cada usuário a importar seu próprio JSON. ICS e clima não usam OAuth Google. Não anunciar conexão Google pronta sem configuração e teste de uma instalação nova.
+O produto usa seu cliente OAuth Desktop dedicado. O build recebe a configuração pelos metadados `CalendarGoogleDesktopClientId` e `CalendarGoogleDesktopClientSecret`; em CI, o ID vem da variável do repositório e a configuração complementar do secret existente. Não colocar JSONs locais, tokens de usuários ou perfis no Git. A configuração pública de um cliente Desktop não equivale a uma credencial de conta autorizada.
+
+O botão normal Conectar conta Google inicia o OAuth legítimo com PKCE e retorno local no navegador. Ele nunca solicita um arquivo do usuário. Se a configuração do produto estiver ausente, o app informa um erro do desenvolvedor; isso deve ser reparado no build, e não transferido ao usuário como uma instrução para procurar um JSON. Cada usuário autoriza sua própria conta; não copiar sessões entre máquinas.
+
+A verificação pública do Google e o teste real de consentimento continuam independentes dos testes offline e da existência do cliente. ICS e clima não usam OAuth Google. Não anunciar a conexão pronta em uma instalação nova antes de validar autorização, leitura e persistência reais.
+
+## Builds em pastas sincronizadas
+
+O código pode ficar no Drive; configure `SMT_CALENDAR_BUILD_ROOT` para uma pasta local de caches MSBuild, `SMT_CALENDAR_STAGE_ROOT` para staging local e `SMT_CALENDAR_ARTIFACTS_ROOT` para saída de pacotes local. Sem essas variáveis, os caminhos do CI permanecem os mesmos. Isso evita locks de arquivos mapeados no CreateAppHost sem mover a fonte canônica ou incluir caches no repositório. Copiar somente artefatos aprovados e hashes para a gestão institucional.
 
 Fontes oficiais: [GitHub Actions e Microsoft Store](https://learn.microsoft.com/windows/apps/publish/msstore-dev-cli/github-actions), [distribuição Win32](https://learn.microsoft.com/windows/apps/distribute-through-store/how-to-distribute-your-win32-app-through-microsoft-store), [StartupTask](https://learn.microsoft.com/uwp/api/windows.applicationmodel.startuptask).
