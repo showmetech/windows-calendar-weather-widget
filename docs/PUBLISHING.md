@@ -2,7 +2,7 @@
 
 1. Alterar e testar este código-fonte canônico. Revisar e criar um commit, com aumento da versão em src/WindowsCalendarWeatherWidget.csproj.
 2. Executar `python scripts/release.py publish` em um checkout autenticado. O comando publica o commit e a tag; não instala uma versão nova no desktop.
-3. GitHub Actions compila x64/ARM64, executa testes isolados, publica arquivos versionados no GitHub e submete o MSIX à Microsoft Store.
+3. GitHub Actions compila x64/ARM64, executa testes isolados e publica arquivos versionados no GitHub. A submissão automática à Store exige as credenciais Entra/Partner Center configuradas; se faltarem, o job falha antes do upload. Use a rota manual autorizada no produto existente, sem declarar a automação concluída.
 4. Verificar a certificação e a versão publicamente disponível no Partner Center. Submissão aceita não equivale a publicação aprovada.
 5. Instalar somente o artefato correspondente à mesma versão/commit. Usuários da Store recebem atualizações pelo Windows, sujeito às configurações do sistema.
 
@@ -16,7 +16,7 @@ Variáveis GitHub: STORE_IDENTITY_NAME, STORE_PUBLISHER, STORE_PUBLISHER_DISPLAY
 
 Segredos GitHub: AZURE_AD_TENANT_ID, SELLER_ID, AZURE_AD_APPLICATION_CLIENT_ID, AZURE_AD_APPLICATION_SECRET. A aplicação Entra precisa ser autorizada no Partner Center. Sua criação/permissões devem ser aprovadas pelo proprietário. Nunca colar segredos em arquivos versionados, chat ou logs.
 
-O primeiro envio exige cadastro, dados de listagem, privacidade, classificação etária e certificação. A automação oficial de atualizações pressupõe um produto já publicado. O job da Store falha explicitamente se a configuração estiver incompleta; não marca publicação como concluída.
+O produto existente já teve sua primeira publicação. Preserve sua identidade e publicador; não refaça cadastro nem reserve outro produto. A atualização exige pacote, listagem, privacidade e classificação válidos, seguidos de certificação. A automação oficial de atualizações pressupõe um produto já publicado. O job da Store falha explicitamente se a configuração estiver incompleta; não marca publicação como concluída.
 
 ## Validação
 
@@ -47,3 +47,10 @@ A verificação pública do Google e o teste real de consentimento continuam ind
 O código pode ficar no Drive; configure `SMT_CALENDAR_BUILD_ROOT` para uma pasta local de caches MSBuild, `SMT_CALENDAR_STAGE_ROOT` para staging local e `SMT_CALENDAR_ARTIFACTS_ROOT` para saída de pacotes local. Sem essas variáveis, os caminhos do CI permanecem os mesmos. Isso evita locks de arquivos mapeados no CreateAppHost sem mover a fonte canônica ou incluir caches no repositório. Copiar somente artefatos aprovados e hashes para a gestão institucional.
 
 Fontes oficiais: [GitHub Actions e Microsoft Store](https://learn.microsoft.com/windows/apps/publish/msstore-dev-cli/github-actions), [distribuição Win32](https://learn.microsoft.com/windows/apps/distribute-through-store/how-to-distribute-your-win32-app-through-microsoft-store), [StartupTask](https://learn.microsoft.com/uwp/api/windows.applicationmodel.startuptask).
+
+
+## Como verificar uma atualização no desktop
+
+Confirme o Product ID da Store, a versão instalada e a versão liberada. Use a Biblioteca da Microsoft Store ou `winget upgrade --id 9P32G6Q7BTSN --source msstore --exact`. Se não houver atualização disponível, confira a certificação no Partner Center; não substitua WindowsApps por arquivos de build nem instale certificados de teste. Após atualizar, confira versão e assinatura, preservação das preferências e contas, clima, eventos, retorno pela bandeja e inicialização. O próximo login Windows precisa de validação própria e não deve ser declarado testado por existir uma StartupTask.
+
+A matriz suportada é Windows 11 build 22000 ou superior, x64 e ARM64. Localização, login Google, rede, políticas do sistema e serviços externos têm pré-requisitos próprios. Não anunciar compatibilidade com todo PC Windows ou ausência absoluta de erros.
