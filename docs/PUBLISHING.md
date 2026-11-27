@@ -54,3 +54,9 @@ Fontes oficiais: [GitHub Actions e Microsoft Store](https://learn.microsoft.com/
 Confirme o Product ID da Store, a versão instalada e a versão liberada. Use a Biblioteca da Microsoft Store ou `winget upgrade --id 9P32G6Q7BTSN --source msstore --exact`. Se não houver atualização disponível, confira a certificação no Partner Center; não substitua WindowsApps por arquivos de build nem instale certificados de teste. Após atualizar, confira versão e assinatura, preservação das preferências e contas, clima, eventos, retorno pela bandeja e inicialização. O próximo login Windows precisa de validação própria e não deve ser declarado testado por existir uma StartupTask.
 
 A matriz suportada é Windows 11 build 22000 ou superior, x64 e ARM64. Localização, login Google, rede, políticas do sistema e serviços externos têm pré-requisitos próprios. Não anunciar compatibilidade com todo PC Windows ou ausência absoluta de erros.
+
+## Atalho desktop em atualizacoes Store
+
+A partir de 1.9.1, a inicializacao confere apenas os atalhos de nomes conhecidos do proprio app e exige o alvo Explorer com o AUMID exato do pacote. Mantem uma copia do icone atual no perfil, sincronizada com o asset da bandeja; preserva backup local antes de migrar o nome legado ou repontar o icone. Nao recria atalhos removidos pelo usuario, nao altera atalhos de outros apps e nao limpa caches globais. A manutencao roda fora da thread da interface; restricoes do Windows sao registradas localmente sem impedir o widget.
+
+O modo opt-in --inspect exibe uma entrada na barra de tarefas e suprime o recolhimento compartilhado para permitir inspecao nativa. Nao comprova o comportamento normal de recolhimento/startup; apos o teste, reabrir sem a flag. A ativacao do pacote pode usar IApplicationActivationManager com o AUMID, sem acesso direto a WindowsApps, elevacao ou alteracao de permissoes.

@@ -1,3 +1,12 @@
+## SMT Calendar Widget 1.9.1
+
+- Automatically refreshes the icon of an existing, verified Store desktop shortcut after updates, using a stable profile path matching the tray asset. Legacy shortcut names are migrated with a local backup; absent or unrelated shortcuts are preserved.
+- The existing opt-in --inspect mode keeps its window available for native inspection without participating in shared widget dismissal; normal activation behavior is unchanged.
+- Corrects the installed-app diagnostic to validate the selected surface opacity, including the opaque default, instead of requiring translucency.
+- Adds regression coverage for shortcut ownership, preserved backups, idempotence, stale icons and opacity mismatches.
+
+The 1.9.0 Store release remains available while this maintenance update is prepared. Google branding is verified; data-access scope review remains separate and pending.
+
 ## SMT Calendar Widget 1.9.0
 
 - Three primary settings sections: Widget, Weather and Calendar, with native keyboard navigation and focused secondary flows.

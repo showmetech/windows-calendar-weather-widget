@@ -2,18 +2,18 @@
 internal static class LiveProbe {
  static readonly DateTimeOffset boot=DateTimeOffset.UtcNow;static string last="";static bool busy;
  public static bool Running=>busy;
- public static void Poll(Window window,Action show,Action hide,Action settings,Func<bool> settingsOpen,Action back,Func<bool> tray,Func<bool> settingsGeometry,Func<object> facts){
+ public static void Poll(Window window,Action show,Action hide,Action settings,Func<bool> settingsOpen,Action back,Func<bool> tray,Func<bool> settingsGeometry,Func<object> facts,Func<double>? desiredOpacity=null){
   string path=Distribution.ControlPath(".widget-live-test-request");string value;try{value=File.ReadAllText(path);}catch{if(Distribution.IsPackaged)return;try{value=File.ReadAllText(Distribution.LegacyPath(".widget-live-test-request"));}catch{return;}}
   if(busy||value==last||!DateTimeOffset.TryParse(value,out var time)||time<boot||time>DateTimeOffset.UtcNow.AddSeconds(10))return;
-  last=value;busy=true;_=Run(window,show,hide,settings,settingsOpen,back,tray,settingsGeometry,facts);
+  last=value;busy=true;_=Run(window,show,hide,settings,settingsOpen,back,tray,settingsGeometry,facts,desiredOpacity);
  }
- static async Task Run(Window window,Action show,Action hide,Action settings,Func<bool> settingsOpen,Action back,Func<bool> tray,Func<bool> settingsGeometry,Func<object> facts){
+ static async Task Run(Window window,Action show,Action hide,Action settings,Func<bool> settingsOpen,Action back,Func<bool> tray,Func<bool> settingsGeometry,Func<object> facts,Func<double>? desiredOpacity){
   var checks=new Dictionary<string,bool>();string? error=null;object? detail=null;
   try{
    checks["OutsideFocusPolicy"]=SuiteActivation.VerifyFocusPolicy();checks["NativeFocusDismissalAndPin"]=await SuiteActivation.VerifyNativeFocus(window,show);show();await Task.Delay(500);window.UpdateLayout();var hwnd=new WindowInteropHelper(window).Handle;var dpi=VisualTreeHelper.GetDpi(window);
    checks["StandardActionPositions"]=SuiteChrome.Aligned(window);checks["WindowOpened"]=window.IsVisible&&IsWindowVisible(hwnd);checks["TrayRegistered"]=tray();
    checks["StandardWidth"]=Math.Abs(window.ActualWidth-360)<1;checks["StandardHeight"]=Math.Abs(window.ActualHeight-600)<1;
-   checks["TranslucentBackground"]=window.AllowsTransparency&&window.Content is System.Windows.Controls.Border surface&&surface.Background is SolidColorBrush brush&&brush.Color.A<255;checks["DpiValid"]=dpi.DpiScaleX>0&&dpi.DpiScaleY>0;
+   checks["SurfaceMatchesOpacityPreference"]=SurfaceMatchesPreference(window,desiredOpacity?.Invoke()??1);checks["DpiValid"]=dpi.DpiScaleX>0&&dpi.DpiScaleY>0;
    settings();for(int i=0;i<50&&!settingsOpen();i++)await Task.Delay(100);await Task.Delay(600);
    checks["SettingsOpened"]=settingsOpen();checks["SettingsGeometry"]=settingsGeometry();
    back();for(int i=0;i<50&&settingsOpen();i++)await Task.Delay(100);checks["SettingsClosed"]=!settingsOpen();
@@ -22,5 +22,6 @@ internal static class LiveProbe {
   }catch(Exception ex){error=ex.ToString();checks["Completed"]=false;}
   finally{try{back();show();}catch{}try{var result=new{At=DateTimeOffset.Now,ProcessId=Environment.ProcessId,Version=System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString(),Checks=checks,Facts=detail,Passed=checks.Values.All(v=>v),Error=error,Method="Production handlers and native HWND/tray registration in the installed desktop process; no physical input, uploads or audio writes"};var path=Distribution.ControlPath(".widget-live-test.json");File.WriteAllText(path+".tmp",JsonSerializer.Serialize(result,new JsonSerializerOptions{WriteIndented=true}));File.Move(path+".tmp",path,true);}finally{busy=false;}}
  }
+ internal static bool SurfaceMatchesPreference(Window window,double expected)=>window.AllowsTransparency&&window.Content is System.Windows.Controls.Border surface&&surface.Background is SolidColorBrush brush&&brush.Color.A==255&&Math.Abs(surface.Opacity-expected)<.001;
  [DllImport("user32.dll")]static extern bool IsWindowVisible(IntPtr hwnd);
 }

@@ -3,7 +3,7 @@ internal static class SuiteActivation {
  public static bool MenuOpen;static Window? window;static Action? hide;static Func<bool> pinned=()=>false;static DateTime shown;static bool dismissing;static DispatcherTimer? timer;static string last="",cause="Startup";static readonly DateTimeOffset boot=DateTimeOffset.UtcNow;
  static string Owner=>System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name??"Widget";
  static string FilePath=>Path.Combine(Environment.GetEnvironmentVariable("WINDOWS_WIDGET_TEST_DATA")??Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"WindowsWidgetSuite","activation.json");
- static bool Testing=>Environment.GetCommandLineArgs().Any(a=>a.StartsWith("--verify")||a=="--self-test");
+ static bool Testing=>Environment.GetCommandLineArgs().Any(a=>a.StartsWith("--verify")||a=="--self-test"||a=="--inspect");
  public static void Attach(Window target,Action hideAction,Func<bool> isPinned){if(Testing)return;window=target;hide=hideAction;pinned=isPinned;target.Activated+=(_,_)=>Claim();target.IsVisibleChanged+=(_,_)=>{if(target.IsVisible){shown=DateTime.UtcNow;dismissing=false;}Save();};target.Loaded+=(_,_)=>Save();target.Deactivated+=async(_,_)=>{await System.Threading.Tasks.Task.Delay(150);CheckFocus();};timer=new(){Interval=TimeSpan.FromMilliseconds(100)};timer.Tick+=(_,_)=>{Poll();CheckFocus();};timer.Start();target.Closed+=(_,_)=>timer?.Stop();}
  internal static bool ShouldDismiss(bool fixedOpen,bool menu,bool ownWindow)=>!fixedOpen&&!menu&&!ownWindow;
  internal static bool VerifyFocusPolicy()=>ShouldDismiss(false,false,false)&&!ShouldDismiss(true,false,false)&&!ShouldDismiss(false,true,false)&&!ShouldDismiss(false,false,true)&&!ShouldDismiss(true,true,true);
