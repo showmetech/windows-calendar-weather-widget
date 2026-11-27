@@ -19,6 +19,7 @@ public sealed class Settings {
  public void Upgrade(){if(SchemaVersion<2){StartWithWindows=true;AutomaticLocation=true;WeatherRefreshMinutes=5;CalendarRefreshMinutes=5;SchemaVersion=2;}if(SchemaVersion<3){LocationConfigured=LocationUpdated.HasValue||LocationStatus=="Cidade escolhida manualmente";SchemaVersion=3;}WeatherRefreshMinutes=ValidInterval(WeatherRefreshMinutes);CalendarRefreshMinutes=ValidInterval(CalendarRefreshMinutes);}
 
  public double Left {get;set;}=double.NaN; public double Top {get;set;}=double.NaN;
+ public bool ReduceMotion {get;set;}
  public double Width {get;set;}=360; public double Height {get;set;}=600;
  public bool Pinned {get;set;}=true;public string Theme {get;set;}="System"; public bool Topmost {get;set;}
  public bool AutomaticLocation {get;set;}=true; public string LocationStatus {get;set;}="Localização automática ainda não consultada"; public DateTimeOffset? LocationUpdated {get;set;}
